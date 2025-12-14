@@ -6,6 +6,7 @@ import { ArrowRight, Zap, Shield, Cpu } from 'lucide-react'
 import Particles from '../components/ui/Particles'
 import GradientText from '../components/ui/GradientText'
 import SpotlightCard from '../components/ui/SpotlightCard'
+import PixelCard from '../components/ui/PixelCard'
 import TrueFocus from '../components/ui/TrueFocus'
 
 export default function LandingPage() {
@@ -150,6 +151,49 @@ export default function LandingPage() {
                             ))}
                         </div>
                     </motion.div>
+                </section>
+
+                {/* CORE MODULES SECTION */}
+                <section style={{ padding: '80px 20px', maxWidth: '1200px', margin: '0 auto' }}>
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        style={{ textAlign: 'center', marginBottom: '60px' }}
+                    >
+                        <h2 style={{ fontSize: 'clamp(30px, 5vw, 48px)', fontWeight: 'bold', marginBottom: '16px' }}>
+                            <GradientText colors={["#40ffaa", "#4079ff", "#40ffaa", "#4079ff", "#40ffaa"]}>Core Modules</GradientText>
+                        </h2>
+                        <p style={{ color: '#888', maxWidth: '600px', margin: '0 auto' }}>
+                            Powered by a modular architecture designed for infinite scalability.
+                        </p>
+                    </motion.div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '30px', padding: '20px' }}>
+                        <PixelCard variant="blue" className="h-[250px]">
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', textAlign: 'center', padding: '24px' }}>
+                                <Zap size={40} color="#00F0FF" />
+                                <h3 style={{ fontSize: '20px', fontWeight: 'bold' }}>Prompt Engine</h3>
+                                <p style={{ fontSize: '14px', color: '#aaa' }}>Advanced prompt optimization using genetic algorithms and RL.</p>
+                            </div>
+                        </PixelCard>
+
+                        <PixelCard variant="pink" className="h-[250px]">
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', textAlign: 'center', padding: '24px' }}>
+                                <Cpu size={40} color="#d946ef" />
+                                <h3 style={{ fontSize: '20px', fontWeight: 'bold' }}>Agent Swarm</h3>
+                                <p style={{ fontSize: '14px', color: '#aaa' }}>Orchestrate multiple local agents to solve complex tasks autonomously.</p>
+                            </div>
+                        </PixelCard>
+
+                        <PixelCard variant="green" className="h-[250px]">
+                            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', textAlign: 'center', padding: '24px' }}>
+                                <Shield size={40} color="#22c55e" />
+                                <h3 style={{ fontSize: '20px', fontWeight: 'bold' }}>Privacy Guard</h3>
+                                <p style={{ fontSize: '14px', color: '#aaa' }}>Enterprise-grade safety layers ensuring no data leaks.</p>
+                            </div>
+                        </PixelCard>
+                    </div>
                 </section>
 
                 <footer style={{ padding: '60px 20px', textAlign: 'center', color: '#444', borderTop: '1px solid rgba(255,255,255,0.05)' }}>

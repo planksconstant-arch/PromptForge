@@ -1,0 +1,69 @@
+.pixel-card-wrapper {
+    position: relative;
+    overflow: hidden;
+    border-radius: 0.75rem;
+    /* tailwind rounded-xl */
+}
+
+.pixel-card-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: var(--card-bg, #09090b);
+    /* zinc-950 */
+    border: 1px solid var(--card-border, #27272a);
+    /* zinc-800 */
+    border-radius: 0.75rem;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: transform 0.3s ease;
+}
+
+.pixel-card-container.blue {
+    --card-bg: #09090b;
+    --card-border: #27272a;
+    --glow-color: #06b6d4;
+    /* cyan-500 */
+}
+
+.pixel-card-container.pink {
+    --card-bg: #09090b;
+    --card-border: #27272a;
+    --glow-color: #d946ef;
+    /* fuchsia-500 */
+}
+
+.pixel-card-container.green {
+    --card-bg: #09090b;
+    --card-border: #27272a;
+    --glow-color: #22c55e;
+    /* green-500 */
+}
+
+.pixel-card-container.default {
+    --card-bg: #09090b;
+    --card-border: #27272a;
+    --glow-color: #ffffff;
+}
+
+.pixel-card-glow {
+    position: absolute;
+    top: var(--y, 50%);
+    left: var(--x, 50%);
+    width: 250px;
+    height: 250px;
+    background-color: var(--glow-color);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    filter: blur(80px);
+    opacity: 0;
+    transition: opacity 0.3s ease-in-out;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.pixel-card-wrapper:hover .pixel-card-container {
+    transform: scale(1.02);
+}
