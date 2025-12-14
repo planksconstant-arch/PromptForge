@@ -1,0 +1,101 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto h-[calc(100vh-100px)] flex flex-col">
+    <!-- Header -->
+    <header class="mb-6 flex-shrink-0">
+        <h2 class="text-3xl font-bold text-white">Agent Builder</h2>
+        <p class="text-slate-400">Design custom AI agents via conversation.</p>
+    </header>
+
+    <!-- Chat Area -->
+    <div id="chat-container" class="flex-1 glass rounded-2xl p-6 overflow-y-auto space-y-4 mb-6 scroll-smooth">
+        <!-- Messages will be injected here -->
+        <div class="flex justify-start">
+            <div class="max-w-[80%] rounded-2xl rounded-tl-none px-6 py-4 bg-slate-800 text-slate-200">
+                Hello! I'm the Agent Architect. Describe the AI agent you want to build.
+            </div>
+        </div>
+    </div>
+
+    <!-- Input Area -->
+    <div class="flex-shrink-0 relative">
+        <input type="text" id="user-input"
+            class="w-full bg-slate-800/50 border border-slate-700 rounded-xl px-6 py-4 text-white focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition-all placeholder-slate-500"
+            placeholder="e.g., 'I want a researcher that focuses on medical papers...'">
+        <button onclick="sendMessage()"
+            class="absolute right-2 top-2 bottom-2 bg-indigo-600 hover:bg-indigo-700 text-white px-6 rounded-lg font-medium transition-colors">
+            Send
+        </button>
+    </div>
+</div>
+
+<script>
+    const chatContainer = document.getElementById('chat-container');
+    const userInput = document.getElementById('user-input');
+
+    // Initial State
+    let builderState = null;
+
+    function appendMessage(role, text) {
+        const div = document.createElement('div');
+        div.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+
+        const bubble = document.createElement('div');
+        bubble.className = `max-w-[80%] rounded-2xl px-6 py-4 text-slate-200 ${role === 'user'
+                ? 'bg-indigo-600 rounded-tr-none'
+                : 'bg-slate-800 rounded-tl-none'
+            }`;
+        bubble.innerText = text;
+
+        div.appendChild(bubble);
+        chatContainer.appendChild(div);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    async function sendMessage() {
+        const text = userInput.value.trim();
+        if (!text) return;
+
+        // User UI
+        appendMessage('user', text);
+        userInput.value = '';
+
+        // API Call
+        try {
+            // Determine endpoint
+            const endpoint = builderState ? '/builder/continue' : '/builder/start';
+            const payload = builderState
+                ? { state: builderState, message: text }
+                : { description: text };
+
+            const response = await fetch(endpoint, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await response.json();
+
+            // Update State
+            builderState = data.state;
+
+            // AI UI
+            appendMessage('assistant', data.message);
+
+            if (data.agentConfig) {
+                appendMessage('assistant', '✨ Agent Configuration Ready!');
+                // Could render JSON pretty here
+            }
+
+        } catch (e) {
+            console.error(e);
+            appendMessage('assistant', '⚠️ Error contacting the architect.');
+        }
+    }
+
+    // Enter key support
+    userInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+    });
+</script>
+{% endblock %}

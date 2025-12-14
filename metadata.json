@@ -1,0 +1,5 @@
+{
+  "name": "Yaprompt",
+  "description": "An advanced prompt engineering studio featuring a hybrid optimization pipeline. A local RL agent provides initial structuring, which is then refined by the Gemini Large Language Model for semantic depth and accuracy.",
+  "requestFramePermissions": []
+}

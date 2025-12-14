@@ -1,0 +1,136 @@
+{% extends "layout.html" %}
+
+{% block content %}
+<div class="max-w-6xl mx-auto h-[calc(100vh-100px)] flex flex-col">
+    <header class="mb-6">
+        <h2 class="text-3xl font-bold text-white">Prompt Studio</h2>
+        <p class="text-slate-400">Refine, Analyze, and Optimize your prompts with AI.</p>
+    </header>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 overflow-hidden">
+        <!-- Input Column -->
+        <div class="glass rounded-2xl p-6 flex flex-col">
+            <h3 class="text-lg font-semibold mb-4 text-indigo-400">Input Prompt</h3>
+            <textarea id="promptInput"
+                class="flex-1 w-full bg-slate-900/50 border border-slate-700 rounded-xl p-4 text-slate-200 focus:ring-2 focus:ring-indigo-500 font-mono text-sm resize-none mb-4"
+                placeholder="Paste your rough prompt here..."></textarea>
+
+            <div class="flex justify-between items-center bg-slate-800/50 p-3 rounded-lg">
+                <div class="flex items-center space-x-4">
+                    <label class="flex items-center space-x-2 text-sm text-slate-300">
+                        <input type="checkbox" id="useMemory"
+                            class="rounded text-indigo-500 focus:ring-indigo-500 bg-slate-700 border-slate-600">
+                        <span>Use Memory</span>
+                    </label>
+                </div>
+                <button onclick="optimizePrompt()"
+                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg font-medium transition-all flex items-center">
+                    <span>✨ Optimize</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Output Column -->
+        <div class="glass rounded-2xl p-6 flex flex-col bg-slate-900/80">
+            <h3 class="text-lg font-semibold mb-4 text-green-400">Optimized Result</h3>
+
+            <!-- Loading State -->
+            <div id="loader" class="hidden flex-1 flex flex-col items-center justify-center text-slate-500">
+                <div class="w-12 h-12 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin mb-4">
+                </div>
+                <p>Analyzing structure & intent...</p>
+            </div>
+
+            <!-- Result State -->
+            <div id="resultArea" class="hidden flex-1 flex flex-col overflow-y-auto">
+                <div class="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-4 mb-4">
+                    <h4 class="text-xs font-bold text-indigo-300 uppercase mb-2">Reasoning</h4>
+                    <p id="reasoningText" class="text-sm text-slate-300 italic"></p>
+                </div>
+
+                <div class="flex-1 relative group">
+                    <textarea id="optimizedOutput" readonly
+                        class="w-full h-full bg-transparent border-none focus:ring-0 text-slate-100 font-mono text-sm resize-none"></textarea>
+                    <button onclick="copyResult()"
+                        class="absolute top-2 right-2 bg-slate-700 hover:bg-slate-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">
+                        Copy
+                    </button>
+                </div>
+
+                <div id="critiqueArea" class="mt-4 pt-4 border-t border-slate-700 hidden">
+                    <h4 class="text-xs font-bold text-slate-400 uppercase mb-2">Critique</h4>
+                    <div class="grid grid-cols-3 gap-2 text-center text-xs">
+                        <div class="bg-slate-800 rounded p-2">
+                            <div class="text-slate-500">Clarity</div>
+                            <div id="scoreClarity" class="text-white font-bold text-lg">--</div>
+                        </div>
+                        <div class="bg-slate-800 rounded p-2">
+                            <div class="text-slate-500">Robustness</div>
+                            <div id="scoreRobustness" class="text-white font-bold text-lg">--</div>
+                        </div>
+                        <div class="bg-slate-800 rounded p-2">
+                            <div class="text-slate-500">Efficiency</div>
+                            <div id="scoreEfficiency" class="text-white font-bold text-lg">--</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Empty State -->
+            <div id="emptyState" class="flex-1 flex items-center justify-center text-slate-600 text-sm italic">
+                Result will appear here...
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    async function optimizePrompt() {
+        const input = document.getElementById('promptInput').value;
+        if (!input.trim()) return;
+
+        // UI Updates
+        document.getElementById('emptyState').classList.add('hidden');
+        document.getElementById('resultArea').classList.add('hidden');
+        document.getElementById('loader').classList.remove('hidden');
+
+        try {
+            const res = await fetch('/optimizer/optimize', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    prompt: input,
+                    options: { memory: document.getElementById('useMemory').checked }
+                })
+            });
+
+            const data = await res.json();
+
+            // Render Result
+            document.getElementById('reasoningText').textContent = data.reasoning || "Optimized based on best practices.";
+            document.getElementById('optimizedOutput').value = data.prompt;
+
+            if (data.critique) {
+                document.getElementById('critiqueArea').classList.remove('hidden');
+                document.getElementById('scoreClarity').textContent = data.critique.clarity || '-';
+                document.getElementById('scoreRobustness').textContent = data.critique.robustness || '-';
+                document.getElementById('scoreEfficiency').textContent = data.critique.efficiency || '-';
+            }
+
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('resultArea').classList.remove('hidden');
+
+        } catch (e) {
+            alert("Optimization failed. Check backend.");
+            document.getElementById('loader').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+        }
+    }
+
+    function copyResult() {
+        const copyText = document.getElementById("optimizedOutput");
+        copyText.select();
+        navigator.clipboard.writeText(copyText.value);
+    }
+</script>
+{% endblock %}

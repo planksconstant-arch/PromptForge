@@ -1,0 +1,77 @@
+{
+    "name": "Deep Research Agent",
+    "nodes": [
+        {
+            "parameters": {
+                "httpMethod": "POST",
+                "path": "execute-agent",
+                "options": {}
+            },
+            "name": "Webhook",
+            "type": "n8n-nodes-base.webhook",
+            "typeVersion": 1,
+            "position": [
+                460,
+                300
+            ]
+        },
+        {
+            "parameters": {
+                "model": "gemini-pro",
+                "prompt": "=You are a Deep Research Agent. Your goal is to research the following topic and provide a comprehensive, well-structured report in Markdown format.\n\nTopic: {{ $json.body.context.topic }}\n\nStructure the report with:\n1. Executive Summary\n2. Key Findings\n3. Detailed Analysis\n4. Conclusion\n\nUse your internal knowledge to simulate a deep research process. If you have access to search tools, use them (simulated here).",
+                "options": {}
+            },
+            "name": "Google Gemini Chat",
+            "type": "n8n-nodes-base.googleGeminiChat",
+            "typeVersion": 1,
+            "position": [
+                680,
+                300
+            ],
+            "credentials": {
+                "googleGeminiApi": {
+                    "id": "YOUR_CREDENTIAL_ID",
+                    "name": "Google Gemini account"
+                }
+            }
+        },
+        {
+            "parameters": {
+                "respondWith": "json",
+                "responseBody": "={\n  \"output\": {\n    \"title\": \"Research Report: {{ $json.body.context.topic }}\",\n    \"content\": {{ JSON.stringify($json.text) }},\n    \"agentId\": \"{{ $json.body.agentId }}\"\n  }\n}",
+                "options": {}
+            },
+            "name": "Respond to Webhook",
+            "type": "n8n-nodes-base.respondToWebhook",
+            "typeVersion": 1,
+            "position": [
+                900,
+                300
+            ]
+        }
+    ],
+    "connections": {
+        "Webhook": {
+            "main": [
+                [
+                    {
+                        "node": "Google Gemini Chat",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        },
+        "Google Gemini Chat": {
+            "main": [
+                [
+                    {
+                        "node": "Respond to Webhook",
+                        "type": "main",
+                        "index": 0
+                    }
+                ]
+            ]
+        }
+    }
+}

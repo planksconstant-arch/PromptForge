@@ -1,0 +1,84 @@
+{
+    "manifest_version": 3,
+    "name": "YaPrompt - Personal AI Operating System",
+    "version": "2.0.0",
+    "description": "Self-Evolving Personal AI OS - Local RL-Powered Brain, Knowledge Graph, Autonomous Workflows & Multi-Modal Intelligence",
+    "permissions": [
+        "storage",
+        "activeTab",
+        "scripting",
+        "contextMenus",
+        "sidePanel",
+        "notifications",
+        "tabs",
+        "downloads",
+        "alarms"
+    ],
+    "host_permissions": [
+        "https://generativelanguage.googleapis.com/*"
+    ],
+    "background": {
+        "service_worker": "background.js"
+    },
+    "side_panel": {
+        "default_path": "index.html"
+    },
+    "action": {
+        "default_popup": "index.html",
+        "default_icon": {
+            "16": "icons/icon16.png",
+            "48": "icons/icon48.png",
+            "128": "icons/icon128.png"
+        }
+    },
+    "options_page": "options.html",
+    "commands": {
+        "optimize-prompt": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+O",
+                "mac": "Command+Shift+O"
+            },
+            "description": "Open Yaprompt optimizer"
+        },
+        "scan-selection": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+S",
+                "mac": "Command+Shift+S"
+            },
+            "description": "Scan selected text for style"
+        },
+        "open-dashboard": {
+            "suggested_key": {
+                "default": "Ctrl+Shift+D",
+                "mac": "Command+Shift+D"
+            },
+            "description": "Open Yaprompt Command Center"
+        }
+    },
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "run_at": "document_idle"
+        }
+    ],
+    "icons": {
+        "16": "icons/icon16.png",
+        "48": "icons/icon48.png",
+        "128": "icons/icon128.png"
+    },
+    "web_accessible_resources": [
+        {
+            "resources": [
+                "assets/*"
+            ],
+            "matches": [
+                "<all_urls>"
+            ]
+        }
+    ]
+}

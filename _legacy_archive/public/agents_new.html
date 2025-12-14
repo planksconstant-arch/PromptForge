@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yaprompt - AI Agent Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: , 'Inter', sans-serif;
+            background: #0a0a0f;
+            color: #e2e8f0;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-gradient {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.1) 0%, transparent 50%);
+            z-index: 0;
+        }
+
+        .floating-letters {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .letter {
+            position: absolute;
+            font-size: 80px;
+            font-weight: 900;
+            color: rgba(99, 102, 241, 0.05);
+            animation: float 20s infinite ease-in-out;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(0) rotate(0deg);
+                opacity: 0.05;
+            }
+
+            50% {
+                transform: translateY(-100px) rotate(180deg);
+                opacity: 0.1;
+            }
+        }
+
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 60px;
+        }
+
+        .logo-container {
+            position: relative;
+            display: inline-block;
+        }
+
+        .logo {
+            font-size: 48px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6, #ec4899);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            letter-spacing: -2px;
+            position: relative;
+            animation: logoGlow 3s ease-in-out infinite;
+        }
+
+        .particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: linear-gradient(135deg, #6366f1, #ec4899);
+            border-radius: 50%;
+            animation: float-away 2s ease-out forwards;
+        }
+
+        @keyframes logoGlow {
+
+            0%,
+            100% {
+                filter: drop-shadow(0 0 10px rgba(99, 102, 241, 0.5));
+            }
+
+            50% {
+                filter: drop-shadow(0 0 20px rgba(236, 72, 153, 0.8));
+            }
+        }
+
+        @keyframes float-away {
+            0% {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: translateY(-100px) translateX(var(--x-offset)) scale(0);
+                opacity: 0;
+            }
+        }
+
+        .tagline {
+            color: #94a3b8;
+            font-size: 18px;
+            font-weight: 300;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 14px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 24px;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #64748b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: #1e1e2e;
+            border: 1px solid rgba(99, 102, 241, 0.3);
+            border-radius: 20px;
+            padding: 32px;
+            max-width: 600px;
+            width: 90%;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-gradient"></div>
+    <div class="floating-letters" id="floatingLetters"></div>
+
+    <div class="container">
+        <header class="header">
+            <div class="logo-container">
+                <h1 class="logo" id="animatedLogo">YAPROMPT</h1>
+                <div class="particles" id="logoParticles"></div>
+            </div>
+            <p class="tagline">Your Local Self-Evolving AI Brain</p>
+        </header>
+
+        <div class="section-header">
+            <h2>🧠 Your AI Agents</h2>
+            <button class="btn btn-primary" onclick="alert('Agent builder coming soon!')">+ Build New Agent</button>
+        </div>
+
+        <div class="agents-grid" id="agentsGrid">
+            <div class="empty-state">
+                <div style="font-size: 64px;">🧠</div>
+                <div>No agents yet</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Particle animation
+        const letters = 'YAPROMPTAI';
+        const container = document.getElementById('floatingLetters');
+
+        for (let i = 0; i < 20; i++) {
+            const letter = document.createElement('div');
+            letter.className = 'letter';
+            letter.textContent = letters[Math.floor(Math.random() * letters.length)];
+            letter.style.left = Math.random() * 100 + '%';
+            letter.style.top = Math.random() * 100 + '%';
+            letter.style.animationDelay = Math.random() * 20 + 's';
+            container.appendChild(letter);
+        }
+
+        function createParticle() {
+            const particles = document.getElementById('logoParticles');
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = (Math.random() * 100) + '%';
+            particle.style.top = (Math.random() * 100) + '%';
+            particle.style.setProperty('--x-offset', (Math.random() * 100 - 50) + 'px');
+            particles.appendChild(particle);
+            setTimeout(() => particle.remove(), 2000);
+        }
+
+        setInterval(createParticle, 500);
+    </script>
+</body>
+
+</html>
