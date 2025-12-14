@@ -17,7 +17,7 @@ from services.ai_operating_system import ai_operating_system
 
 # Page Config
 st.set_page_config(
-    page_title="YaPrompt AI Studio",
+    page_title="PromptForge AI Studio",
     page_icon="🤖",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -34,7 +34,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Sidebar
-st.sidebar.title("🤖 YaPrompt Studio")
+st.sidebar.title("🤖 PromptForge Studio")
 st.sidebar.markdown("---")
 mode = st.sidebar.radio("Select Module", [
     "Dashboard", 
