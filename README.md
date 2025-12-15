@@ -45,6 +45,7 @@ graph TD
 *   **Jinja2**: Server-side template rendering for UI.
 *   **Google Gemini**: Primary LLM provider (via `gemini-2.0-flash-exp`).
 *   **Pydantic**: Data validation and schema definition.
+*   **React (Optional)**: Converted frontend components available in `frontend/`.
 
 ## 🏁 Getting Started
 
