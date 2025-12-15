@@ -104,4 +104,4 @@ GEMINI_API_KEY=your_api_key_here
 Contributions are welcome! Please fork the repository and submit a Pull Request.
 
 ---
-*Built with ❤️ by the PromptForge Team*
+*Built with  by the PromptForge Team*
