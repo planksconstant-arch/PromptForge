@@ -58,7 +58,7 @@ git clone https://github.com/planksconstant-arch/PromptForge.git
 cd PromptForge
 ```
 
-### 2. Setup & Run
+### 1. Setup & Run
 ```bash
 # Install dependencies
 pip install -r yaprompt_python/requirements.txt
@@ -67,11 +67,11 @@ pip install -r yaprompt_python/requirements.txt
 python -m yaprompt_python.main
 ```
 
-### 3. Access the Application
+### 2. Access the Application
 Once the server is running, access the tools at:
 *   **📊 Dashboard**: [http://localhost:8000/](http://localhost:8000/)
 *   **🪄 Prompt Studio**: [http://localhost:8000/studio](http://localhost:8000/studio)
-*   **🛠️ Agent Builder**: [http://localhost:8000/builder](http://localhost:8000/builder)
+
 
 ## 🔧 Configuration
 
