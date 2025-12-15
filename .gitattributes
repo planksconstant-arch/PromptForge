@@ -1,0 +1,7 @@
+_legacy_archive/** linguist-vendored
+_legacy_archive/**/* linguist-vendored
+*.js linguist-vendored
+*.ts linguist-vendored
+*.tsx linguist-vendored
+*.html linguist-detectable
+*.css linguist-vendored
