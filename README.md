@@ -25,16 +25,16 @@ PromptForge uses a pure Python architecture for maximum power and flexibility:
 ```mermaid
 graph TD
     subgraph "Application Layer (Python/FastAPI)"
-        A[Unified Server] --> B[Jinja2 Templates (UI)]
-        A --> C[API Endpoints]
-        C --> D[Agent Engine]
-        C --> E[Local LLM Service]
-        C --> F[Browser Automation]
+        A["Unified Server"] --> B["Jinja2 Templates (UI)"]
+        A --> C["API Endpoints"]
+        C --> D["Agent Engine"]
+        C --> E["Local LLM Service"]
+        C --> F["Browser Automation"]
     end
 
     subgraph "External Services"
-        E --> H[Gemini API]
-        E --> I[Ollama / Local]
+        E --> H["Gemini API"]
+        E --> I["Ollama / Local"]
     end
 ```
 
