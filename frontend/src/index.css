@@ -4,33 +4,41 @@
 
 @layer base {
     :root {
-        --background: 222.2 84% 4.9%;
-        --foreground: 210 40% 98%;
+        /* Deep Black Background */
+        --background: 240 10% 3.9%;
+        --foreground: 0 0% 98%;
 
-        --card: 222.2 84% 4.9%;
-        --card-foreground: 210 40% 98%;
+        /* Dark Card */
+        --card: 240 10% 6%;
+        --card-foreground: 0 0% 98%;
 
-        --popover: 222.2 84% 4.9%;
-        --popover-foreground: 210 40% 98%;
+        /* Dark High-Tech Popover */
+        --popover: 240 10% 6%;
+        --popover-foreground: 0 0% 98%;
 
-        --primary: 210 40% 98%;
-        --primary-foreground: 222.2 47.4% 11.2%;
+        /* Neon Cyan Primary */
+        --primary: 180 100% 50%;
+        --primary-foreground: 240 5.9% 10%;
 
-        --secondary: 217.2 32.6% 17.5%;
-        --secondary-foreground: 210 40% 98%;
+        /* Electric Purple Secondary */
+        --secondary: 270 100% 60%;
+        --secondary-foreground: 0 0% 98%;
 
-        --muted: 217.2 32.6% 17.5%;
-        --muted-foreground: 215 20.2% 65.1%;
+        /* Muted Blue-Grey */
+        --muted: 240 3.7% 15.9%;
+        --muted-foreground: 240 5% 64.9%;
 
-        --accent: 217.2 32.6% 17.5%;
-        --accent-foreground: 210 40% 98%;
+        /* Neon Accent */
+        --accent: 270 100% 60%;
+        --accent-foreground: 0 0% 98%;
 
         --destructive: 0 62.8% 30.6%;
-        --destructive-foreground: 210 40% 98%;
+        --destructive-foreground: 0 0% 98%;
 
-        --border: 217.2 32.6% 17.5%;
-        --input: 217.2 32.6% 17.5%;
-        --ring: 212.7 26.8% 83.9%;
+        /* Dark Borders */
+        --border: 240 3.7% 15.9%;
+        --input: 240 3.7% 15.9%;
+        --ring: 180 100% 50%;
 
         --radius: 0.5rem;
     }
@@ -42,6 +50,51 @@
     }
 
     body {
-        @apply bg-background text-foreground;
+        @apply bg-background text-foreground font-mono;
+        background-image: url('/assets/bg.png');
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+        background-blend-mode: overlay;
+    }
+}
+
+@layer utilities {
+    .glitch-border {
+        position: relative;
+    }
+
+    .glitch-border::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 5%, #06b6d4 5%, #06b6d4 10%, transparent 10%, transparent 50%, #8b5cf6 50%, #8b5cf6 55%, transparent 55%, transparent 100%);
+        background-size: 200% 200%;
+        opacity: 0;
+        transition: opacity 0.3s;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .glitch-border:hover::before {
+        opacity: 1;
+        animation: glitch-anim 2s infinite linear;
+    }
+
+    @keyframes glitch-anim {
+        0% {
+            background-position: 0% 0%;
+        }
+
+        50% {
+            background-position: 100% 100%;
+        }
+
+        100% {
+            background-position: 0% 0%;
+        }
     }
 }

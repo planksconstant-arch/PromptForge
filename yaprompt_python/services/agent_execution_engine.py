@@ -6,10 +6,12 @@ Executes agent configurations with multi-step capabilities
 import time
 import json
 import uuid
+import re
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 from .local_llm_service import local_llm_service
 from .work_product_manager import work_product_manager, WorkProduct
+from .tool_registry import tool_registry, ToolResult
 
 class AgentStep(BaseModel):
     id: str
@@ -24,6 +26,7 @@ class AgentConfigContext(BaseModel):
     name: str
     description: str
     capabilities: List[Dict[str, Any]]
+    connections: List[str] = [] # Added to context
     steps: List[AgentStep]
     outputFormat: str
     metadata: Optional[Dict[str, Any]] = None
@@ -47,6 +50,7 @@ class AgentExecutionEngine:
         context = {
             "input": input_data,
             "stepResults": {},
+            "agentConnections": agent.connections,
             "metadata": {
                 "startTime": start_time,
                 "agentId": agent.id,
@@ -93,7 +97,21 @@ class AgentExecutionEngine:
             raise e
 
     async def _execute_step(self, step: AgentStep, context: Dict[str, Any], api_key: Optional[str]) -> Any:
+        connections = context.get('agentConnections', [])
+        
+        # 1. Enriched Prompt construction
         prompt = self._build_enriched_prompt(step, context)
+        
+        # 2. Inject Real Tool Definitions
+        if connections:
+            prompt += "\n\n### AVAILABLE TOOLS (MCP):\n"
+            for conn_id in connections:
+                tool_prompt = tool_registry.get_tool_prompt(conn_id)
+                if tool_prompt:
+                    prompt += tool_prompt + "\n"
+            
+            prompt += "\nTo use a tool, reply in formats like: [TOOL: pes, ACTION: list_agents, PARAMS: {}]"
+
         cap_type = step.capability.get('type')
         
         # Capability handling - mostly just prompt engineering wrappers
@@ -112,20 +130,52 @@ class AgentExecutionEngine:
              enhanced = f"You are a data extraction agent.\n\n{prompt}\n\nExtract information accurately."
         else:
             enhanced = prompt
+        
+        # 3. Call LLM
+        # We need to call LLM here. Re-using _call_llm which is defined in this class.
+        raw_response = await self._call_llm(enhanced, api_key, step.outputFormat)
+        
+        # 4. Check for Tool Invocation in Response (Re-Act Loop)
+        if hasattr(raw_response, 'replace') and "[TOOL:" in raw_response:
+             # Parse and Execute
+             return await self._execute_tool_call(raw_response, connections)
+            
+        return raw_response
 
-        return await self._call_llm(enhanced, api_key, step.outputFormat)
+    async def _execute_tool_call(self, response_text: str, allowed_tools: List[str]) -> Any:
+        try:
+            match = re.search(r'\[TOOL:\s*(\w+),\s*ACTION:\s*(\w+),\s*PARAMS:\s*({.*?})\]', response_text)
+            if match:
+                tool_id, action, params_str = match.groups()
+                if tool_id not in allowed_tools:
+                    return f"Error: Tool {tool_id} not connected. Please enable in Builder."
+                
+                tool = tool_registry.get_tool(tool_id)
+                if tool:
+                    try: 
+                        params = json.loads(params_str)
+                    except: 
+                        # Fallback for LLM bad json
+                        params = {} 
+
+                    result = await tool.execute(action, params)
+                    return f"### TOOL EXECUTION RESULT ({tool_id}.{action})\nStatus: {'Success' if result.success else 'Failed'}\nData: {result.data}\nError: {result.error}"
+        except Exception as e:
+            return f"Tool Execution Failed: {str(e)}"
+        
+        return response_text
 
     def _build_enriched_prompt(self, step: AgentStep, context: Dict[str, Any]) -> str:
         prompt = step.prompt
-        prompt += f"\n\n### Input:\n{json.dumps(context['input'], indent=2)}"
+        prompt += f"\n\n### Input:\n{json.dumps(context.get('input', {}), indent=2)}"
         
         if step.inputFrom:
-            prompt += '\n\n### Context from previous steps:'
+            prompt += '\\n\\n### Context from previous steps:'
             for step_id in step.inputFrom:
                 res = context["stepResults"].get(step_id)
                 if res:
                     val = res if isinstance(res, str) else json.dumps(res, indent=2)
-                    prompt += f"\n\n**{step_id}**:\n{val}"
+                    prompt += f"\\n\\n**{step_id}**:\\n{val}"
         
         prompt += f"\n\n### Output Format:\nPlease provide your response in {step.outputFormat} format."
         return prompt

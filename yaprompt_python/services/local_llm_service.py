@@ -241,32 +241,65 @@ class LocalLLMService:
         api_key = os.getenv("OPENROUTER_API_KEY")
         if not api_key: raise Exception("Missing OPENROUTER_API_KEY")
         
-        # Default to a free/cheap model if generic 'model' passed
-        target_model = model
-        if not model or model == 'llama3.2:3b': 
-            target_model = "google/gemini-2.0-flash-exp:free" 
-            
+        # Fallback list of models to try in order
+        fallback_models = [
+            'google/gemini-2.0-flash-exp:free',
+            'google/gemini-2.0-flash-thinking-exp:free',
+            'google/gemini-exp-1206:free',
+            'meta-llama/llama-3.3-70b-instruct:free',
+            'meta-llama/llama-3.1-70b-instruct:free',
+            'mistralai/mistral-7b-instruct:free'
+        ]
+        
+        # If a specific free model is requested, try it first, but still use fallbacks
+        if model and 'free' in model and model not in fallback_models:
+             fallback_models.insert(0, model)
+        elif model and 'free' not in model and model != 'llama3.2:3b':
+             # If a paid model is requested, try only that one (don't downgrade to free unexpectedly)
+             # But if it's the default local model 'llama3.2:3b', ignore it and use fallbacks
+             fallback_models = [model]
+
+        last_error = None
+        
         headers = {
             "Authorization": f"Bearer {api_key}",
             "Content-Type": "application/json",
             "HTTP-Referer": "http://localhost:8000",
-            "X-Title": "YaPrompt Studio"
+            "X-Title": "PromptForge Studio"
         }
-        messages = [{"role": "user", "content": prompt}]
-        if system: messages.insert(0, {"role": "system", "content": system})
+
+        for target_model in fallback_models:
+            print(f"Attempting OpenRouter model: {target_model}")
+            messages = [{"role": "user", "content": prompt}]
+            if system: messages.insert(0, {"role": "system", "content": system})
+            
+            payload = {
+                "model": target_model,
+                "messages": messages,
+                "temperature": temp
+            }
+            
+            try:
+                async with aiohttp.ClientSession() as session:
+                    async with session.post(self.OPENROUTER_ENDPOINT, json=payload, headers=headers) as resp:
+                        if resp.status != 200:
+                            err_text = await resp.text()
+                            # If rate limit or temporary error, continue to next model
+                            if resp.status == 429 or resp.status >= 500:
+                                print(f"Model {target_model} failed with {resp.status}: {err_text}")
+                                last_error = Exception(f"OpenRouter Error {resp.status}: {err_text}")
+                                continue
+                            else:
+                                # If it's a 4xx error (like bad request), fail immediately
+                                raise Exception(f"OpenRouter Error {resp.status}: {err_text}")
+                        
+                        data = await resp.json()
+                        return data['choices'][0]['message']['content']
+            except Exception as e:
+                print(f"Connection error with {target_model}: {e}")
+                last_error = e
+                continue
         
-        payload = {
-            "model": target_model,
-            "messages": messages,
-            "temperature": temp
-        }
-        
-        async with aiohttp.ClientSession() as session:
-            async with session.post(self.OPENROUTER_ENDPOINT, json=payload, headers=headers) as resp:
-                if resp.status != 200:
-                    err_text = await resp.text()
-                    raise Exception(f"OpenRouter Error {resp.status}: {err_text}")
-                data = await resp.json()
-                return data['choices'][0]['message']['content']
+        raise last_error or Exception("All OpenRouter models failed.")
 
 local_llm_service = LocalLLMService()

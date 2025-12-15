@@ -3,6 +3,7 @@ import Layout from '../components/Layout';
 import { SpotlightCard } from '../components/ui/SpotlightCard';
 import { BorderBeam } from '../components/ui/BorderBeam';
 import { TextGenerateEffect } from '../components/ui/TextGenerateEffect';
+import { FluctuatingText } from '../components/ui/FluctuatingText';
 
 const PromptStudio: React.FC = () => {
     const [input, setInput] = useState('');
@@ -48,114 +49,121 @@ const PromptStudio: React.FC = () => {
         <Layout activePage="studio">
             <div className="max-w-6xl mx-auto h-[calc(100vh-100px)] flex flex-col">
                 <header className="mb-6">
-                    <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 via-purple-400 to-cyan-400">
-                        Prompt Studio
-                    </h2>
-                    <p className="text-slate-400 mt-2">Refine, Analyze, and Optimize your prompts with AI.</p>
+                    <FluctuatingText
+                        text="PROMPT STUDIO"
+                        className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 via-blue-500 to-purple-600 tracking-widest"
+                    />
+                    <p className="text-slate-400 mt-2 font-mono text-xs tracking-wider">REFINE // ANALYZE // OPTIMIZE</p>
                 </header>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 flex-1 overflow-hidden">
                     {/* Input Column */}
-                    <SpotlightCard className="flex flex-col p-6 h-full">
-                        <h3 className="text-lg font-semibold mb-4 text-indigo-400">Input Prompt</h3>
+                    <SpotlightCard className="flex flex-col p-6 h-full bg-black/60 border border-cyan-500/20 backdrop-blur-md">
+                        <div className="mb-4 flex items-center gap-2">
+                            <div className="w-2 h-2 bg-cyan-500 animate-pulse" />
+                            <FluctuatingText text="INPUT_PROTOCOL" className="text-sm font-bold text-cyan-400 tracking-widest" />
+                        </div>
+
                         <textarea
-                            className="flex-1 w-full bg-slate-900/50 border border-slate-800 rounded-xl p-4 text-slate-200 focus:ring-2 focus:ring-indigo-500 font-mono text-sm resize-none mb-4 transition-all"
-                            placeholder="Paste your rough prompt here..."
+                            className="flex-1 w-full bg-black/80 border border-cyan-500/20 rounded-none p-4 text-cyan-50 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 font-mono text-sm resize-none mb-4 transition-all placeholder:text-cyan-900/50"
+                            placeholder="> INITIALIZE PROMPT SEQUENCE..."
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
                         />
 
-                        <div className="flex justify-between items-center bg-slate-800/50 p-3 rounded-lg border border-slate-700/50">
+                        <div className="flex justify-between items-center bg-black/80 p-3 border border-cyan-500/20">
                             <div className="flex items-center space-x-4">
-                                <label className="flex items-center space-x-2 text-sm text-slate-300 cursor-pointer group">
+                                <label className="flex items-center space-x-2 text-sm text-slate-400 cursor-pointer group hover:text-cyan-400 transition-colors">
                                     <input
                                         type="checkbox"
                                         checked={useMemory}
                                         onChange={(e) => setUseMemory(e.target.checked)}
-                                        className="rounded text-indigo-500 focus:ring-indigo-500 bg-slate-700 border-slate-600 group-hover:border-indigo-500 transition-colors"
+                                        className="rounded-none text-cyan-500 focus:ring-cyan-500 bg-black border-cyan-500/50 hover:border-cyan-400"
                                     />
-                                    <span className="group-hover:text-indigo-300 transition-colors">Use Memory</span>
+                                    <span className="font-mono text-xs uppercase tracking-wider">[ MEMORY_ACCESS ]</span>
                                 </label>
                             </div>
                             <button
                                 onClick={optimizePrompt}
                                 disabled={loading}
-                                className="relative overflow-hidden bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-2 rounded-lg font-medium transition-all shadow-[0_0_20px_rgba(99,102,241,0.5)] hover:shadow-[0_0_30px_rgba(99,102,241,0.7)] disabled:opacity-50 disabled:shadow-none"
+                                className="relative overflow-hidden bg-cyan-950/30 hover:bg-cyan-900/50 text-cyan-400 border border-cyan-500/50 px-8 py-2 font-bold transition-all shadow-[0_0_15px_rgba(6,182,212,0.1)] hover:shadow-[0_0_25px_rgba(6,182,212,0.3)] disabled:opacity-50 disabled:shadow-none font-mono text-xs uppercase tracking-widest glitch-border"
                             >
-                                {loading ? 'Optimizing...' : '✨ Optimize'}
+                                {loading ? <FluctuatingText text="PROCESSING..." /> : <FluctuatingText text="EXECUTE" animateOnHover={true} />}
                             </button>
                         </div>
                     </SpotlightCard>
 
                     {/* Output Column */}
-                    <SpotlightCard className="flex flex-col p-6 h-full bg-slate-900/80">
-                        <h3 className="text-lg font-semibold mb-4 text-green-400">Optimized Result</h3>
+                    <SpotlightCard className="flex flex-col p-6 h-full bg-black/60 border border-purple-500/20 backdrop-blur-md">
+                        <div className="mb-4 flex items-center gap-2">
+                            <div className="w-2 h-2 bg-purple-500 animate-pulse" />
+                            <FluctuatingText text="OUTPUT_STREAM" className="text-sm font-bold text-purple-400 tracking-widest" />
+                        </div>
 
                         {/* Loading State */}
                         {loading && (
-                            <div className="flex-1 flex flex-col items-center justify-center text-slate-500 relative">
-                                <BorderBeam size={150} duration={4} delay={0} />
-                                <BorderBeam size={150} duration={4} delay={2} colorFrom="#10b981" colorTo="#34d399" />
-                                <p className="mt-8">Analyzing structure & intent...</p>
+                            <div className="flex-1 flex flex-col items-center justify-center text-cyan-500/50 relative">
+                                <BorderBeam size={150} duration={2} delay={0} colorFrom="#06b6d4" colorTo="#8b5cf6" />
+                                <div className="font-mono text-xs animate-pulse text-cyan-400 tracking-[0.2em] mt-8">
+                                    <FluctuatingText text="OPTIMIZING NEURAL PATHWAYS..." />
+                                </div>
                             </div>
                         )}
 
                         {/* Empty State */}
                         {!loading && !result && !error && (
-                            <div className="flex-1 flex items-center justify-center text-slate-600 text-sm italic">
-                                Result will appear here...
+                            <div className="flex-1 flex items-center justify-center text-slate-800 text-xs font-mono uppercase tracking-widest blinking-cursor">
+                                _ WAITING FOR INPUT
                             </div>
                         )}
 
                         {/* Error State */}
                         {error && (
-                            <div className="flex-1 flex items-center justify-center text-red-400 text-sm">
-                                Optimization failed. Check network/backend.
+                            <div className="flex-1 flex items-center justify-center text-red-500 text-sm font-mono border border-red-500/50 bg-red-950/20 p-4 glitch-border">
+                                <span className="mr-2">⚠</span> SYSTEM_ERROR: OPTIMIZATION_FAILED
                             </div>
                         )}
 
                         {/* Result State */}
                         {!loading && result && (
-                            <div className="flex-1 flex flex-col overflow-y-auto relative">
-                                <BorderBeam duration={10} size={300} />
+                            <div className="flex-1 flex flex-col overflow-y-auto relative scrollbar-track-black scrollbar-thumb-purple-900">
+                                <BorderBeam duration={5} size={300} colorFrom="#8b5cf6" colorTo="#06b6d4" />
 
-                                <div className="bg-indigo-500/10 border border-indigo-500/20 rounded-xl p-4 mb-4 backdrop-blur-sm">
-                                    <h4 className="text-xs font-bold text-indigo-300 uppercase mb-2">Reasoning</h4>
-                                    <p className="text-sm text-slate-300 italic">{result.reasoning || "Optimized based on best practices."}</p>
+                                <div className="bg-purple-900/10 border border-purple-500/20 p-4 mb-4 backdrop-blur-sm relative overflow-hidden">
+                                    <div className="absolute top-0 left-0 w-1 h-full bg-purple-500/50"></div>
+                                    <FluctuatingText text="LOGIC_CORE" className="text-[10px] font-bold text-purple-400 uppercase mb-2 tracking-widest block" />
+                                    <p className="text-sm text-purple-200/80 italic font-mono pl-2 border-l border-purple-500/20">{result.reasoning || "Optimized based on best practices."}</p>
                                 </div>
 
                                 <div className="flex-1 relative group">
                                     <textarea
                                         readOnly
                                         value={result.prompt}
-                                        className="w-full h-full bg-transparent border-none focus:ring-0 text-slate-100 font-mono text-sm resize-none"
+                                        className="w-full h-full bg-transparent border-none focus:ring-0 text-cyan-50 font-mono text-sm resize-none custom-scrollbar p-0 leading-relaxed"
                                     />
-                                    <div className="absolute inset-0 pointer-events-none">
-                                        {/* Overlay for generation effect if needed, but textarea is simple */}
-                                    </div>
                                     <button
                                         onClick={copyResult}
-                                        className="absolute top-2 right-2 bg-slate-700/80 hover:bg-slate-600 text-white text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-md"
+                                        className="absolute top-2 right-2 bg-black/80 hover:bg-cyan-900/30 text-cyan-400 text-[10px] uppercase tracking-wider px-3 py-1 border border-cyan-500/30 opacity-0 group-hover:opacity-100 transition-opacity"
                                     >
-                                        Copy
+                                        [ COPY_DATA ]
                                     </button>
                                 </div>
 
                                 {result.critique && (
-                                    <div className="mt-4 pt-4 border-t border-slate-700/50">
-                                        <h4 className="text-xs font-bold text-slate-400 uppercase mb-2">Critique</h4>
+                                    <div className="mt-4 pt-4 border-t border-purple-500/20">
+                                        <FluctuatingText text="SYSTEM_METRICS" className="text-[10px] font-bold text-slate-500 uppercase mb-2 tracking-widest block" />
                                         <div className="grid grid-cols-3 gap-2 text-center text-xs">
-                                            <div className="bg-slate-800/50 rounded-lg p-2 border border-slate-700">
-                                                <div className="text-slate-500">Clarity</div>
-                                                <div className="text-white font-bold text-lg">{result.critique.clarity || '-'}</div>
+                                            <div className="bg-black/40 p-2 border border-cyan-500/20">
+                                                <div className="text-[10px] text-slate-500 uppercase">CLARITY</div>
+                                                <div className="text-cyan-400 font-bold text-lg font-mono">{result.critique.clarity || '-'}</div>
                                             </div>
-                                            <div className="bg-slate-800/50 rounded-lg p-2 border border-slate-700">
-                                                <div className="text-slate-500">Robustness</div>
-                                                <div className="text-white font-bold text-lg">{result.critique.robustness || '-'}</div>
+                                            <div className="bg-black/40 p-2 border border-purple-500/20">
+                                                <div className="text-[10px] text-slate-500 uppercase">ROBUSTNESS</div>
+                                                <div className="text-purple-400 font-bold text-lg font-mono">{result.critique.robustness || '-'}</div>
                                             </div>
-                                            <div className="bg-slate-800/50 rounded-lg p-2 border border-slate-700">
-                                                <div className="text-slate-500">Efficiency</div>
-                                                <div className="text-white font-bold text-lg">{result.critique.efficiency || '-'}</div>
+                                            <div className="bg-black/40 p-2 border border-emerald-500/20">
+                                                <div className="text-[10px] text-slate-500 uppercase">EFFICIENCY</div>
+                                                <div className="text-emerald-400 font-bold text-lg font-mono">{result.critique.efficiency || '-'}</div>
                                             </div>
                                         </div>
                                     </div>

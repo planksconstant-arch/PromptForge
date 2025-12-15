@@ -1,33 +1,23 @@
-
-import asyncio
-import os
 import sys
-from dotenv import load_dotenv
+import os
+import asyncio
 
-# Add current dir to path to import services
-sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+# Add the project root to the python path
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
-# Load env variables from parent directory
-parent_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-load_dotenv(os.path.join(parent_dir, '.env'))
+from yaprompt_python.services.conversational_agent_builder import conversational_agent_builder
 
-from services.local_llm_service import local_llm_service
-
-async def verify():
-    print("Verifying LocalLLMService with Gemini...")
-    # Force provider to gemini
+async def main():
     try:
-        response = await local_llm_service.generate(
-            prompt="Hello, explicitly confirm you are working.",
-            options={"provider": "gemini"}
-        )
-        print(f"Response: {response}")
-        if "Error from gemini" in response.text:
-             print("FAILURE: Service returned error.")
-        else:
-             print("SUCCESS: Service returned content.")
+        print("Starting conversation...")
+        # This calls process_message which calls _call_llm which uses asyncio
+        result = await conversational_agent_builder.start_conversation("I want a research agent")
+        print("Conversation started successfully.")
+        print(f"Response: {result.conversationHistory[-1].content}")
+    except NameError as e:
+        print(f"Caught expected NameError: {e}")
     except Exception as e:
-        print(f"CRITICAL FAILURE: {e}")
+        print(f"Caught unexpected exception: {e}")
 
 if __name__ == "__main__":
-    asyncio.run(verify())
+    asyncio.run(main())

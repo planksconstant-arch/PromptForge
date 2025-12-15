@@ -34,7 +34,7 @@ from .services.pdf_generator import pdf_generator
 from .services.browser_automation import browser_automation
 from .types import Workflow, WorkflowExecutionResult
 
-app = FastAPI(title="YaPrompt AI Studio API")
+app = FastAPI(title="PromptForge AI Studio API")
 
 # Allow CORS
 app.add_middleware(
@@ -273,13 +273,7 @@ async def execute_workflow(request: WorkflowExecuteRequest):
 
 # --- Conversational Builder ---
 
-@app.post("/builder/start")
-async def builder_start(request: BuilderStartRequest):
-    return await conversational_agent_builder.start_conversation(request.description)
-
-@app.post("/builder/continue")
-async def builder_continue(request: BuilderContinueRequest):
-    return await conversational_agent_builder.continue_conversation(request.state, request.message)
+# Duplicate endpoints removed. See lines 475+ for correct implementation.
 
 # --- Writing Style ---
 
@@ -471,12 +465,43 @@ async def builder_page(request: Request):
     })
 
 # --- Builder API Endpoints (Helper wrappers for Frontend) ---
+# --- Builder API Endpoints (Helper wrappers for Frontend) ---
 @app.post("/builder/start")
 async def builder_start(data: Dict[str, str]):
     res = await conversational_agent_builder.start_conversation(data['description'])
-    return {"message": res.message, "state": res.state, "agentConfig": res.agentConfig}
+    latest_msg = res.conversationHistory[-1].content if res.conversationHistory else "..."
+    # Serialize Pydantic model
+    return {
+        "message": latest_msg, 
+        "state": res.dict(), 
+        "agentConfig": res.proposedSpec.dict() if res.proposedSpec else None
+    }
 
 @app.post("/builder/continue")
 async def builder_continue(data: Dict[str, Any]):
     res = await conversational_agent_builder.continue_conversation(data['state'], data['message'])
-    return {"message": res.message, "state": res.state, "agentConfig": res.agentConfig}
+    latest_msg = res.conversationHistory[-1].content if res.conversationHistory else "..."
+    return {
+        "message": latest_msg, 
+        "state": res.dict(), 
+        "agentConfig": res.proposedSpec.dict() if res.proposedSpec else None
+    }
+
+@app.post("/builder/deploy")
+async def builder_deploy(data: Dict[str, Any]):
+    agent_config = data.get('agentConfig')
+    if not agent_config:
+        raise HTTPException(status_code=400, detail="Missing agentConfig")
+    
+    # Save to file
+    agent_id = str(uuid.uuid4())[:8]
+    filename = f"agent_{agent_id}.json"
+    # Ensure directory exists
+    agents_dir = os.path.join(os.path.dirname(__file__), "agents")
+    os.makedirs(agents_dir, exist_ok=True)
+    
+    filepath = os.path.join(agents_dir, filename)
+    with open(filepath, 'w') as f:
+        json.dump(agent_config, f, indent=2)
+        
+    return {"success": True, "agent_id": agent_id, "path": filepath, "message": f"Agent deployed to {filename}"}

@@ -9,10 +9,6 @@ import time
 from typing import List, Dict, Optional, Any
 from pydantic import BaseModel
 
-# Mocking external services for now (replace with actual imports once they exist)
-# from .local_llm_service import local_llm_service
-# from .nested_learning_engine import nested_learning_engine
-
 # ============================================================================
 # TYPE DEFINITIONS
 # ============================================================================
@@ -22,6 +18,7 @@ class AgentSpec(BaseModel):
     description: str
     capabilities: List[str]
     workflow: List[Dict[str, Any]]
+    connections: List[Any] = [] # Added for MCP (IDs or objects)
     triggers: Optional[List[Dict[str, Any]]] = []
     examples: Optional[List[str]] = []
 
@@ -30,6 +27,7 @@ class AgentConfig(BaseModel):
     name: str
     description: str
     capabilities: List[Dict[str, Any]]
+    connections: List[str] = [] # Added connections
     steps: List[Dict[str, Any]]
     outputFormat: str
     metadata: Dict[str, Any]
@@ -68,9 +66,6 @@ class AgentBuilder:
 
     async def from_prompt(self, prompt: str, options: Dict[str, Any] = None) -> BuildResult:
         try:
-            # TODO: Integrate Nested Learning here
-            # await nested_learning_engine.process_data(...)
-
             # Generate Spec
             spec = await self.generate_spec(prompt)
             if not spec:
@@ -79,41 +74,16 @@ class AgentBuilder:
             # Convert to Config
             agent = await self.spec_to_config(spec)
 
-            # Validation could go here
-
             return BuildResult(success=True, agent=agent, spec=spec, confidence=0.9)
 
         except Exception as e:
             return BuildResult(success=False, error=str(e), confidence=0)
 
     async def generate_spec(self, prompt: str) -> Optional[AgentSpec]:
-        system_prompt = """You are an expert AI agent designer. Given a natural language description of a task, 
-design a complete agent specification.
-
-Respond with ONLY valid JSON in this exact format:
-{
-    "name": "Agent Name",
-    "description": "What the agent does",
-    "capabilities": ["capability1", "capability2"],
-    "workflow": [
-        {
-            "step": "Step 1",
-            "action": "research/summarize/analyze/write/extract/transform/compare/evaluate",
-            "inputs": ["optional input sources"],
-            "output": "what this step produces"
-        }
-    ],
-    "triggers": [],
-    "examples": []
-}"""
-        
-        # Placeholder for LLM call
-        # response = await local_llm_service.generate(...)
-        
-        # MOCK RESPONSE for initial testing phases without live LLM
+        # Simple heuristic fallback if no LLM connected yet for builder logic
+        # In a real system, this would call an LLM to produce JSON
         print(f"Generating spec for: {prompt}")
         
-        # Simple heuristic fallback if no LLM connected yet
         mock_spec = AgentSpec(
             name="Generated Agent",
             description=f"Agent to handle: {prompt}",
@@ -121,7 +91,8 @@ Respond with ONLY valid JSON in this exact format:
             workflow=[
                 {"step": "Analyze Request", "action": "analyze", "output": "Analysis"},
                 {"step": "Execute Task", "action": "write", "output": "Final Result"}
-            ]
+            ],
+            connections=[] # Default empty
         )
         return mock_spec
 
@@ -145,11 +116,18 @@ Respond with ONLY valid JSON in this exact format:
                 "outputFormat": "json" if "json" in wf_step.get("output", "").lower() else "text"
             })
 
+        # Extract connection IDs if they are dicts, otherwise assume strings
+        conn_ids = []
+        for c in spec.connections:
+            if isinstance(c, dict): conn_ids.append(c.get('id', 'unknown'))
+            else: conn_ids.append(str(c))
+
         return AgentConfig(
             id=self.generate_id(),
             name=spec.name,
             description=spec.description,
             capabilities=[{"type": self.map_capability(c)} for c in spec.capabilities],
+            connections=conn_ids,
             steps=steps,
             outputFormat="markdown",
             metadata={

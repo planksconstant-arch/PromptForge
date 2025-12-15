@@ -6,6 +6,7 @@ Builds automation agents through natural language conversation
 import time
 import json
 import uuid
+import asyncio
 from typing import List, Dict, Any, Optional
 from pydantic import BaseModel
 import google.generativeai as genai
@@ -24,6 +25,7 @@ class AgentSpec(BaseModel):
     name: str = "New Agent"
     description: str = ""
     capabilities: List[str] = []
+    connections: List[Dict[str, Any]] = [] # For MCP/App connections
     steps: List[Dict[str, Any]] = []
     outputFormat: str = "markdown"
 
@@ -39,7 +41,8 @@ class BuilderState(BaseModel):
 
 class ConversationalAgentBuilder:
     def __init__(self):
-        self.api_key = Config.GEMINI_API_KEY
+        # We now rely on local_llm_service for keys and providers
+        pass
     
     async def start_conversation(self, user_description: str) -> BuilderState:
         state = BuilderState(
@@ -60,16 +63,25 @@ class ConversationalAgentBuilder:
         return await self.process_message(state, user_message)
 
     async def process_message(self, state: BuilderState, user_message: str) -> BuilderState:
-        if not self.api_key:
-             # Mock response if no key
-             state.conversationHistory.append(ConversationMessage(role='assistant', content="API Key missing on backend.", timestamp=time.time()))
-             return state
-
+        # Check providers via service
+        from .local_llm_service import local_llm_service
+        
         system_prompt = self._build_system_prompt(state)
         context = self._build_conversation_context(state)
+        full_prompt = f"Context: {context}\n\nProvide response:"
         
         try:
-            response_text = await self._call_llm(system_prompt, context)
+            # Use auto mode - local_llm_service will prioritize OpenRouter/Gemini if keys exist
+            response = await local_llm_service.generate(
+                prompt=full_prompt, 
+                options={
+                    'systemPrompt': system_prompt,
+                    'provider': 'auto',
+                    'temperature': 0.7
+                }
+            )
+            
+            response_text = response.text
             
             # Update state based on LLM response
             self._update_state_from_response(state, response_text)
@@ -110,16 +122,6 @@ class ConversationalAgentBuilder:
         history = "\n".join([f"{m.role.upper()}: {m.content}" for m in state.conversationHistory[-5:]])
         info = json.dumps(state.collectedInfo, indent=2)
         return f"History:\n{history}\n\nInfo:\n{info}"
-
-    async def _call_llm(self, system: str, context: str) -> str:
-        genai.configure(api_key=self.api_key)
-        model = genai.GenerativeModel('gemini-2.0-flash-exp')
-        chat = model.start_chat()
-        response = await asyncio.to_thread(
-            chat.send_message, 
-            f"System: {system}\n\nContext: {context}\n\nProvide response:"
-        )
-        return response.text
 
     def _update_state_from_response(self, state: BuilderState, response: str):
         if "NEXT_PHASE: clarifying" in response: state.phase = 'clarifying'

@@ -13,7 +13,7 @@ export const AnimatedGrid = () => {
     }, []);
 
     return (
-        <div className="fixed inset-0 z-[-1] overflow-hidden bg-slate-950">
+        <div className="fixed inset-0 z-[-1] overflow-hidden">
             <div
                 className="absolute inset-0 z-0 opacity-30"
                 style={{

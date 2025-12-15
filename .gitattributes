@@ -1,10 +1,12 @@
-_legacy_archive/** linguist-vendored
+
+# Auto-generated .gitattributes
+# Exclude frontend from language statistics to prioritize Python
+frontend/**/* linguist-vendored
+scripts/**/* linguist-vendored
 _legacy_archive/**/* linguist-vendored
-
-# Explicitly treat frontend as detectable
-frontend/**/* linguist-detectable
-frontend/**/*.tsx linguist-detectable
-frontend/**/*.ts linguist-detectable
-
-# Keep other vendor rules if needed, but remove global TS/TSX blocks
+*.json linguist-vendored
+*.js linguist-vendored
+*.ts linguist-vendored
+*.tsx linguist-vendored
 *.css linguist-vendored
+*.html linguist-vendored
