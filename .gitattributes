@@ -1,8 +1,10 @@
 _legacy_archive/** linguist-vendored
 _legacy_archive/**/* linguist-vendored
 
-*.js linguist-vendored
-*.ts linguist-vendored
-*.tsx linguist-vendored
-*.html linguist-detectable
+# Explicitly treat frontend as detectable
+frontend/**/* linguist-detectable
+frontend/**/*.tsx linguist-detectable
+frontend/**/*.ts linguist-detectable
+
+# Keep other vendor rules if needed, but remove global TS/TSX blocks
 *.css linguist-vendored
