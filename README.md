@@ -18,6 +18,68 @@
     *   **Agent Builder**: Conversational interface for creating agents.
     *   **Workflow Studio**: Visual tool for automation flows.
 
+## 📸 Interface Gallery
+
+> Experience a true "Dark Sci-Fi" coding environment designed for focus and flow.
+
+| **Prompt Studio** | **Agent Architect** |
+|:---:|:---:|
+| <img src="frontend/public/assets/ui_mockup_prompt_studio.png" width="400" /> | <img src="frontend/public/assets/ui_mockup_agent_builder.png" width="400" /> |
+
+<div align="center">
+  <p><strong>Neural Workflow Visualizer</strong></p>
+  <img src="frontend/public/assets/ui_mockup_workflow_visualizer.png" width="800" />
+</div>
+
+## 🧬 Example Usage
+
+**Scenario**: You want to optimize a vague prompt for a "Cyberpunk Novelist" agent.
+
+1.  **Input Protocol**: Enter your raw prompt in the *Prompt Studio*.
+    > "Write a story about a robot in a neon city."
+2.  **Initialize**: Click the **[ OPTIMIZE ]** button.
+3.  **Neural Processing**: The system uses recursive genetic algorithms to refine the prompt, adding constraints, tone, and sensory details.
+4.  **Optimized Output**:
+    ```text
+    Act as a veteran cyberpunk novelist in the style of William Gibson.
+    Write a 500-word noir narrative centered on 'Unit-734', a discarded service droid.
+    Setting: The rain-slicked slums of Neo-Veridia, Level 4.
+    Tone: Melancholic, gritty, high-tech low-life.
+    Constraints: Include at least 3 sensory descriptions of neon light reflecting on wet metal.
+    ```
+5.  **Deploy**: One-click deploy this optimized persona to the **Agent Architect** to start chatting.
+
+## 📸 Interface Gallery
+
+> Experience a true "Dark Sci-Fi" coding environment designed for focus and flow.
+
+| **Prompt Studio** | **Agent Architect** |
+|:---:|:---:|
+| <img src="frontend/public/assets/ui_mockup_prompt_studio.png" width="400" /> | <img src="frontend/public/assets/ui_mockup_agent_builder.png" width="400" /> |
+
+<div align="center">
+  <p><strong>Neural Workflow Visualizer</strong></p>
+  <img src="frontend/public/assets/ui_mockup_workflow_visualizer.png" width="800" />
+</div>
+
+## 🧬 Example Usage
+
+**Scenario**: You want to optimize a vague prompt for a "Cyberpunk Novelist" agent.
+
+1.  **Input Protocol**: Enter your raw prompt in the *Prompt Studio*.
+    > "Write a story about a robot in a neon city."
+2.  **Initialize**: Click the **[ OPTIMIZE ]** button.
+3.  **Neural Processing**: The system uses recursive genetic algorithms to refine the prompt, adding constraints, tone, and sensory details.
+4.  **Optimized Output**:
+    ```text
+    Act as a veteran cyberpunk novelist in the style of William Gibson.
+    Write a 500-word noir narrative centered on 'Unit-734', a discarded service droid.
+    Setting: The rain-slicked slums of Neo-Veridia, Level 4.
+    Tone: Melancholic, gritty, high-tech low-life.
+    Constraints: Include at least 3 sensory descriptions of neon light reflecting on wet metal.
+    ```
+5.  **Deploy**: One-click deploy this optimized persona to the **Agent Architect** to start chatting.
+
 ## 🏗️ Architecture
 
 PromptForge uses a pure Python architecture for maximum power and flexibility:
