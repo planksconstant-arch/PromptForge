@@ -1,4 +1,5 @@
 import React from 'react';
+import { AnimatedGrid } from './ui/AnimatedGrid';
 
 interface LayoutProps {
     children: React.ReactNode;
@@ -7,9 +8,11 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children, activePage }) => {
     return (
-        <div className="min-h-screen flex text-slate-100 bg-[#0f172a]">
+        <div className="min-h-screen flex text-slate-100 bg-[#0f172a] relative">
+            <AnimatedGrid />
+
             {/* Sidebar */}
-            <aside className="w-64 glass border-r border-slate-800 flex-shrink-0 fixed h-full z-10 selection:bg-indigo-500 selection:text-white" style={{ background: 'rgba(30, 41, 59, 0.7)', backdropFilter: 'blur(10px)' }}>
+            <aside className="w-64 glass border-r border-slate-800 flex-shrink-0 fixed h-full z-10 selection:bg-indigo-500 selection:text-white" style={{ background: 'rgba(30, 41, 59, 0.4)', backdropFilter: 'blur(20px)' }}>
                 <div className="p-6">
                     <h1 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-indigo-400 to-cyan-400">
                         YaPrompt
