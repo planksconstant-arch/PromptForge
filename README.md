@@ -24,7 +24,6 @@
 
 | **Prompt Studio** | **Agent Architect** |
 |:---:|:---:|
-| <img src="frontend/public/assets/ui_mockup_prompt_studio.png" width="400" /> | <img src="frontend/public/assets/ui_mockup_agent_builder.png" width="400" /> |
 
 <div align="center">
   <p><strong>Neural Workflow Visualizer</strong></p>
