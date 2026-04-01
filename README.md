@@ -27,8 +27,8 @@
 
 <div align="center">
   <p><strong>Neural Workflow Visualizer</strong></p>
-  <img src="frontend/public/assets/ui_mockup_workflow_visualizer.png" width="800" />
-</div>
+</div><img width="2552" height="1407" alt="Screenshot 2025-12-19 081734" src="https://github.com/user-attachments/assets/1bcae1de-318c-4c60-88ad-c5f2474f866b" />
+
 
 ## 🧬 Example Usage
 
@@ -54,11 +54,11 @@
 
 | **Prompt Studio** | **Agent Architect** |
 |:---:|:---:|
-| <img src="frontend/public/assets/ui_mockup_prompt_studio.png" width="400" /> | <img src="frontend/public/assets/ui_mockup_agent_builder.png" width="400" /> |
+<img width="2559" height="1424" alt="Screenshot 2025-12-19 081838" src="https://github.com/user-attachments/assets/fd6e11b7-2464-4a3e-9b51-382230ee420b" />
 
 <div align="center">
   <p><strong>Neural Workflow Visualizer</strong></p>
-  <img src="frontend/public/assets/ui_mockup_workflow_visualizer.png" width="800" />
+<img width="2559" height="1163" alt="Screenshot 2025-12-16 112917" src="https://github.com/user-attachments/assets/87fb3201-6caf-422a-997b-119790a5e891" />
 </div>
 
 ## 🧬 Example Usage
